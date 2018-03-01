@@ -1,0 +1,126 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/iron-form/iron-form.html">
+
+<dom-module id="shop-form">
+  <template>
+    <style include="shop-common-styles shop-button shop-form-styles shop-input">
+      :host {
+        display: block;
+      }
+
+      label {
+        display:block;
+      }
+
+      textarea {
+        width: 100%;
+        height: 30vh;
+      }
+    </style>
+
+    <iron-form id="myForm"
+               on-iron-form-response="_afterResponse"
+               on-iron-form-presubmit="_beforeRequest">
+      <form method="post"
+            action="https://script.google.com/macros/s/AKfycbwYSvj58pFl7ORJ_-otYGmHwNM2Mj7rkuGRrLD2ILxO-hgYKdo/exec">
+        <div>
+          <div class="row input-row">
+            <shop-input>
+              <input type="text" id="name" name="name" pattern=".{5,}"
+                     placeholder="Name" autofocus required
+                     autocomplete="Your Name"
+                     aria-labelledby="nameLabel nameHeading">
+              <shop-md-decorator error-message="Invalid Name" aria-hidden="true">
+                <label id="nameLabel">Name</label>
+                <shop-underline></shop-underline>
+              </shop-md-decorator>
+            </shop-input>
+          </div>
+          <div class="row input-row">
+            <shop-input>
+              <input type="email" id="email" name="email"
+                     placeholder="Email" required
+                     aria-labelledby="emailLabel emailHeading">
+              <shop-md-decorator error-message="Invalid Email" aria-hidden="true">
+                <label id="emailLabel">Email</label>
+                <shop-underline></shop-underline>
+              </shop-md-decorator>
+            </shop-input>
+          </div>
+          <div class="row input-row">
+            <shop-input>
+              <label id="messageLabel">Message</label>
+              <textarea id="message" name="message"
+                        placeholder="Your Message"
+                        required aria-labelledby="messageLabel messageHeading"></textarea>
+              <shop-md-decorator error-message="Invalid Message" aria-hidden="true">
+                <shop-underline></shop-underline>
+              </shop-md-decorator>
+            </shop-input>
+          </div>
+          <shop-button responsive id="submitBox">
+            <input type="button" on-click="_submit" value="Place Order">
+          </shop-button>
+        </div>
+      </form>
+    </iron-form>
+  </template>
+
+  <script>
+    /**
+     * `shop-form`
+     * Sample form for the Polymer Shop Demo.
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class ShopForm extends Polymer.Element {
+      static get is() { return 'shop-form'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'shop-form'
+          }
+        };
+      }
+
+      _submit(e) {
+        if (this._validateForm()) {
+          this.$.myForm.submit();
+          console.debug('form submitted');
+        }
+      }
+
+      _validateForm() {
+        return true;
+      }
+
+      _beforeRequest(e) {
+
+        console.debug(e);
+        let form = e.target;
+        let body = form.ajax && form.ajax.body;
+
+        //this._setWaiting(true);
+
+        if (!body) {
+          return;
+        }
+        // Populate the request body where `cartItemsId[i]` is the ID and `cartItemsQuantity[i]`
+        // is the quantity for some item `i`.
+        //body.uip = ;
+        //body.cartItemsQuantity = [];
+      }
+
+      _afterResponse(e) {
+        let response = e.detail.response;
+
+        console.debug("response: ", response);
+      }
+    }
+
+    window.customElements.define(ShopForm.is, ShopForm);
+  </script>
+</dom-module>

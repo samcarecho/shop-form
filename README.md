@@ -1,6 +1,6 @@
 # \<shop-form\>
 
-A Polymer element to add serverless forms to the Polymer Shop Demo.
+A Polymer element to add serverless forms, using Google Sheets, to the Polymer Shop Demo.
 The submitted form data is stored on a Google Sheet.
 
 ## Setup Google Sheets

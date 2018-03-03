@@ -1,6 +1,7 @@
 {
   "name": "shop-form",
-  "description": "Sample form for the Polymer Shop Demo.",
+  "version": "0.5.1",
+  "description": "A Polymer element to add serverless forms, using Google Sheets, to the Polymer Shop Demo.",
   "main": "shop-form.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",

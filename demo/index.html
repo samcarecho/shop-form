@@ -19,7 +19,7 @@
     <link rel="import" href="../shop-form.html">
 
     <custom-style>
-      <style is="custom-style" include="demo-pages-shared-styles">
+      <style is="custom-style" include="demo-pages-shared-styles shop-common-styles shop-button shop-form-styles shop-input">
       </style>
     </custom-style>
   </head>
@@ -28,9 +28,56 @@
       <h3>Basic shop-form demo</h3>
       <demo-snippet>
         <template>
-          <shop-form></shop-form>
+          <shop-form gsid="AKfycbwYSvj58pFl7ORJ_-otYGmHwNM2Mj7rkuGRrLD2ILxO-hgYKdo"
+                     submit-bt-value="Place Order">
+            <div class="row input-row">
+              <shop-input>
+                <input type="text" id="name" name="name" pattern=".{2,} .{2,}"
+                       placeholder="Name" autofocus required
+                       autocomplete="Your Name"
+                       aria-labelledby="nameLabel nameHeading">
+                <shop-md-decorator error-message="Invalid. Please type full name." aria-hidden="true">
+                  <label id="nameLabel">Name</label>
+                  <shop-underline></shop-underline>
+                </shop-md-decorator>
+              </shop-input>
+            </div>
+            <div class="row input-row">
+              <shop-input>
+                <input type="email" id="email" name="email"
+                       placeholder="Email" required
+                       aria-labelledby="emailLabel emailHeading">
+                <shop-md-decorator error-message="Invalid Email" aria-hidden="true">
+                  <label id="emailLabel">Email</label>
+
+                </shop-md-decorator>
+              </shop-input>
+            </div>
+            <div class="row input-row">
+              <shop-input>
+                <div class="row">
+                  <label id="messageLabel">Message</label>
+                </div>
+                <textarea id="message" name="message"
+                          rows="10" style="width: 320px;"
+                          placeholder="Your Message"
+                          required aria-labelledby="messageLabel messageHeading"></textarea>
+                <shop-md-decorator error-message="Invalid Message" aria-hidden="true"></shop-md-decorator>
+              </shop-input>
+            </div>
+          </shop-form>
         </template>
       </demo-snippet>
     </div>
+  <script type="application/javascript">
+    window.onload = function() {
+      let form = document.querySelector('shop-form');
+      window.addEventListener("announce", inform, false);
+    };
+
+    function inform(e) {
+      window.alert(e.detail);
+    }
+  </script>
   </body>
 </html>

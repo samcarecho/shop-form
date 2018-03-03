@@ -1,66 +1,90 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-spinner/paper-spinner-lite.html">
 
 <dom-module id="shop-form">
   <template>
-    <style include="shop-common-styles shop-button shop-form-styles shop-input">
+    <style include="shop-common-styles shop-form-styles shop-input">
       :host {
         display: block;
       }
 
-      label {
-        display:block;
+      paper-spinner-lite {
+        position: absolute;
+        top: 50vh;
+        left: 50vw;
       }
 
-      textarea {
-        width: 100%;
-        height: 30vh;
+      form-button {
+        display: inline-block;
+      }
+
+      form-button > * {
+        display: inline-block;
+        box-sizing: border-box;
+        border: 2px solid #000;
+        background-color: #FFF;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--app-primary-color);
+        margin: 0;
+        padding: 8px 44px;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+        border-radius: 0;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      form-button > *:focus {
+        background-color: #c5cad3;
+      }
+
+      form-button > *:active {
+        background-color: #000;
+        color: #FFF;
+      }
+
+      @media (max-width: 767px) {
+
+        /* Responsive buttons are used in shop-detail, shop-cart and shop-checkout */
+        form-button[responsive] {
+          @apply --layout-fixed-bottom;
+          height: 64px;
+          z-index: 1;
+        }
+
+        form-button[responsive] > * {
+          background-color: var(--app-accent-color);
+          border: none;
+          color: white;
+          padding: 20px;
+          width: 100%;
+          height: 100%;
+          font-size: 15px;
+        }
+
+        shop-button[responsive] > *:focus {
+          background-color: var(--app-accent-color);
+        }
+
       }
     </style>
 
-    <iron-form id="myForm"
+    <iron-form id="shopForm"
                on-iron-form-response="_afterResponse"
                on-iron-form-presubmit="_beforeRequest">
       <form method="post"
-            action="https://script.google.com/macros/s/AKfycbwYSvj58pFl7ORJ_-otYGmHwNM2Mj7rkuGRrLD2ILxO-hgYKdo/exec">
+            action="https://script.google.com/macros/s/[[gsid]]/exec">
         <div>
-          <div class="row input-row">
-            <shop-input>
-              <input type="text" id="name" name="name" pattern=".{5,}"
-                     placeholder="Name" autofocus required
-                     autocomplete="Your Name"
-                     aria-labelledby="nameLabel nameHeading">
-              <shop-md-decorator error-message="Invalid Name" aria-hidden="true">
-                <label id="nameLabel">Name</label>
-                <shop-underline></shop-underline>
-              </shop-md-decorator>
-            </shop-input>
+          <slot id="inputSlot"></slot>
+          <div>
+            <form-button responsive id="submitBox">
+              <input type="button" on-click="_submit" value="[[submitBtValue]]" />
+            </form-button>
+            <paper-spinner-lite active="[[waiting]]"></paper-spinner-lite>
           </div>
-          <div class="row input-row">
-            <shop-input>
-              <input type="email" id="email" name="email"
-                     placeholder="Email" required
-                     aria-labelledby="emailLabel emailHeading">
-              <shop-md-decorator error-message="Invalid Email" aria-hidden="true">
-                <label id="emailLabel">Email</label>
-                <shop-underline></shop-underline>
-              </shop-md-decorator>
-            </shop-input>
-          </div>
-          <div class="row input-row">
-            <shop-input>
-              <label id="messageLabel">Message</label>
-              <textarea id="message" name="message"
-                        placeholder="Your Message"
-                        required aria-labelledby="messageLabel messageHeading"></textarea>
-              <shop-md-decorator error-message="Invalid Message" aria-hidden="true">
-                <shop-underline></shop-underline>
-              </shop-md-decorator>
-            </shop-input>
-          </div>
-          <shop-button responsive id="submitBox">
-            <input type="button" on-click="_submit" value="Place Order">
-          </shop-button>
         </div>
       </form>
     </iron-form>
@@ -79,45 +103,169 @@
       static get is() { return 'shop-form'; }
       static get properties() {
         return {
-          prop1: {
+          /**
+           * Google script id*/
+          gsid: {
             type: String,
-            value: 'shop-form'
+            value: ''
+          },
+
+          /**
+           * Submit button text.*/
+          submitBtValue: {
+            type: String,
+            value: 'Submit'
+          },
+
+          /**
+           * Message passed to event 'announce', on form submission success*/
+          success: {
+            type: String,
+            value: 'Form submitted successfully!'
+          },
+
+          /**
+           * Message passed to event 'announce', on form submission error*/
+          error: {
+            type: String,
+            value: 'We are sorry, there was an error. Please contact support.'
+          },
+
+          /**
+           * True when waiting for the server to repond. */
+          waiting: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * True if an invalid input field is detected. */
+          invalidDetected: {
+            type: Boolean,
+            value: false
           }
+
         };
       }
 
       _submit(e) {
         if (this._validateForm()) {
-          this.$.myForm.submit();
-          console.debug('form submitted');
+          console.debug('submit clicked');
+          this.$.shopForm.submit();
         }
       }
 
       _validateForm() {
-        return true;
+        console.debug('starting form validation');
+        let form = this.$.shopForm;
+        let slotElements = this.$.inputSlot.assignedNodes();
+
+        console.debug(form);
+        console.debug(slotElements);
+
+        this.invalidDetected = false;
+        let isValid =  this._nodeTraverser(slotElements);
+
+        return isValid;
+      }
+
+      _nodeTraverser(nodes) {
+        let isValid = true;
+
+        for (let el, i = 0; el = nodes[i], i < nodes.length; i++) {
+
+          if (el.childNodes.length === 0 && !el.attributes) {
+            console.debug('skipped');
+            continue;
+          }
+          else if (el.attributes.length > 0 ) {
+            if (el.attributes.name) {
+              if (el.checkValidity()) {
+                el.removeAttribute('aria-invalid');
+              }
+              else {
+                // announce error message
+                console.log(el.nextElementSibling);
+                if (el.nextElementSibling) {
+                  this.dispatchEvent(new CustomEvent('announce', {bubbles: true, composed: true,
+                    detail: el.nextElementSibling.getAttribute('error-message')}));
+                }
+                if (el.scrollIntoViewIfNeeded) {
+                  // safari, chrome
+                  el.scrollIntoViewIfNeeded();
+                } else {
+                  // firefox, edge, ie
+                  el.scrollIntoView(false);
+                }
+                el.focus();
+
+                el.setAttribute('aria-invalid', 'true');
+
+                isValid = false;
+                this.invalidDetected = true;
+
+              }
+            }
+            else if (el.childNodes.length > 0 ) {
+              isValid = this._nodeTraverser(el.childNodes);
+              continue;
+            }
+          }
+
+          if (el.childNodes.length > 0 ) {
+            isValid = this._nodeTraverser(el.childNodes);
+          }
+
+          //console.log(i);
+          //console.debug(el, eval(el.childNodes.length === 0), eval(el.attributes));
+        }
+
+        if(this.invalidDetected) {
+          return false;
+        }
+
+        return isValid;
       }
 
       _beforeRequest(e) {
 
         console.debug(e);
-        let form = e.target;
-        let body = form.ajax && form.ajax.body;
+        let form = this.$.shopForm;
+        form.setAttribute('disabled', true);
 
-        //this._setWaiting(true);
+        this.waiting = true;
 
-        if (!body) {
+        /*if (!body) {
           return;
-        }
-        // Populate the request body where `cartItemsId[i]` is the ID and `cartItemsQuantity[i]`
-        // is the quantity for some item `i`.
-        //body.uip = ;
-        //body.cartItemsQuantity = [];
+        }*/
       }
 
       _afterResponse(e) {
         let response = e.detail.response;
-
         console.debug("response: ", response);
+
+        if (response.result === 'success') {
+          this.waiting = false;
+          this._reset();
+
+          this.dispatchEvent(new CustomEvent('announce', {
+            bubbles: true,
+            composed: true,
+            detail: this.success}));
+        }
+        else {
+          this.waiting = false;
+          this.dispatchEvent(new CustomEvent('announce', {
+            bubbles: true,
+            composed: true,
+            detail: this.error}));
+        }
+      }
+
+      _reset() {
+        let form = this.$.shopForm;
+        form.setAttribute('disabled', false);
+        form.reset();
       }
     }
 

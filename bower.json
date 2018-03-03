@@ -4,7 +4,8 @@
   "main": "shop-form.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "iron-form": "polymerelements/iron-form#^2.0.0"
+    "iron-form": "polymerelements/iron-form#^2.0.0",
+    "paper-spinner": "polymerelements/paper-spinner#^2.0.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

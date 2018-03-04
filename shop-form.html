@@ -83,7 +83,6 @@
             <form-button responsive id="submitBox">
               <input type="button" on-click="_submit" value="[[submitBtValue]]" />
             </form-button>
-            <paper-spinner-lite active="[[waiting]]"></paper-spinner-lite>
           </div>
         </div>
       </form>
@@ -98,6 +97,7 @@
      * @customElement
      * @polymer
      * @demo demo/index.html
+     * @author Sam Carecho
      */
     class ShopForm extends Polymer.Element {
       static get is() { return 'shop-form'; }
@@ -124,6 +124,13 @@
             value: 'Form submitted successfully!'
           },
 
+          state: {
+            type: String,
+            reflectToAttribute: true,
+            notify: true,
+            value: 'init'
+          },
+
           /**
            * Message passed to event 'announce', on form submission error*/
           error: {
@@ -135,6 +142,8 @@
            * True when waiting for the server to repond. */
           waiting: {
             type: Boolean,
+            reflectToAttribute: true,
+            notify: true,
             value: false
           },
 
@@ -246,6 +255,7 @@
 
         if (response.result === 'success') {
           this.waiting = false;
+          this.state = 'success';
           this._reset();
 
           this.dispatchEvent(new CustomEvent('announce', {
@@ -255,6 +265,7 @@
         }
         else {
           this.waiting = false;
+          this.state = 'error';
           this.dispatchEvent(new CustomEvent('announce', {
             bubbles: true,
             composed: true,

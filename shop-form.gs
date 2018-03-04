@@ -3,15 +3,15 @@
  ******************************************************************************/
 
 //Modifiy the 2 lines bellow to reflect your reality.
-var TO_ADDRESS = "email.example.com";
+var TO_ADDRESS = 'store@email.com';
 var SITE_DOMAIN = 'example.com'  //the domain of the site/app where the shop-form element is being used.
 
-var RESPONSES_URL;
+var SHEET_URL;
 
 // spit out all the keys/values from the form in HTML for email
 function formatMailBody(url) {
   var result = '';
-  result += '<h4>' + SITE_DOMAIN + 'has received a new form submission.</h4>';
+  result += '<h4>' + SITE_DOMAIN + ' has received a new order.</h4>';
   result += '<div>See the submission here: <br /> <a href="' + url + '" target="_blank">' + url + '</a></div>';
 
   return result;
@@ -21,7 +21,7 @@ function doPost(e) {
   try {
     Logger.log(e);
 
-    RESPONSES_URL = record_data(e);
+    SHEET_URL = record_data(e);
 
     //var mailData = e.parameters;
     var sendEmailTo = TO_ADDRESS;
@@ -29,7 +29,7 @@ function doPost(e) {
     MailApp.sendEmail({
       to: String(sendEmailTo),
       subject: "Contact form submitted on " + SITE_DOMAIN,
-      htmlBody: formatMailBody(RESPONSES_URL)
+      htmlBody: formatMailBody(SHEET_URL)
     });
 
 
@@ -64,14 +64,12 @@ function record_data(e) {
     }
 
     sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-
-    return docUrl;
   }
   catch(error) {
     Logger.log(e);
   }
   finally {
-    return;
+    return docUrl;
   }
 
 }

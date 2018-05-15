@@ -1,5 +1,7 @@
 # \<shop-form\>
 
+## Important warning - The code or concept contained in this repository is just a study case. It's not secure neither intended to be used in production or live websites/apps. Users' information should never be sent through the Internet insecurely. DO NOT use this code to send, retrieve or store users' credit card numbers or any sensitive information. 
+
 A Polymer element to add serverless forms, using Google Sheets, to the Polymer Shop Demo.
 The submitted form data is stored on a Google Sheet.
 
